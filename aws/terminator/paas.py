@@ -287,10 +287,12 @@ class Ecs(DbTerminator):
         for each in container_instances:
             self.client.deregister_container_instance(containerInstance=each['containerInstanceArn'], force=True)
 
-        # Deregister task definitions
+        # Deregister and delete task definitions
         task_definitions = _paginate_task_definition_results()
         for each in task_definitions:
             self.client.deregister_task_definition(taskDefinition=each)
+        for i in range(0, len(task_definitions), 10):
+            self.client.delete_task_definitions(taskDefinitions=task_definitions[i:i + 10])
 
         # Stop all the tasks
         tasks = _paginate_task_results()

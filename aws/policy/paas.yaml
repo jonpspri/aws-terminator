@@ -183,6 +183,7 @@ Statement:
       - ecs:PutAccountSetting
       - ecs:RegisterTaskDefinition
       - ecs:DeregisterTaskDefinition
+      - ecs:DeleteTaskDefinitions
     Resource:
       - "*"
 
