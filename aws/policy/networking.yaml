@@ -169,7 +169,12 @@ Statement:
     Effect: Allow
     Action:
       - servicediscovery:CreateHttpNamespace
+      - servicediscovery:CreatePublicDnsNamespace
+      - servicediscovery:CreatePrivateDnsNamespace
       - servicediscovery:DeleteNamespace
+      - servicediscovery:GetNamespace
       - servicediscovery:GetOperation
+      - servicediscovery:ListServices
+      - servicediscovery:TagResource
     Resource:
       - 'arn:aws:servicediscovery:{{ aws_region }}:{{ aws_account_id }}:*/*'

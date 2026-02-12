@@ -545,14 +545,12 @@ class NetworkFirewallRuleGroup(DbTerminator):
         self.client.delete_rule_group(RuleGroupArn=self.id)
 
 
-class ServiceDiscoveryHttpNamespace(Terminator):
+class ServiceDiscoveryNamespace(Terminator):
     @staticmethod
     def create(credentials):
         def _paginate_namespaces(client):
-            return client.get_paginator('list_namespaces').paginate(
-                Filters=[{'Name': 'TYPE', 'Values': ['HTTP'], 'Condition': 'EQ'}],
-            ).build_full_result()['Namespaces']
-        return Terminator._create(credentials, ServiceDiscoveryHttpNamespace, 'servicediscovery', _paginate_namespaces)
+            return client.get_paginator('list_namespaces').paginate().build_full_result()['Namespaces']
+        return Terminator._create(credentials, ServiceDiscoveryNamespace, 'servicediscovery', _paginate_namespaces)
 
     @property
     def id(self):
@@ -566,5 +564,13 @@ class ServiceDiscoveryHttpNamespace(Terminator):
     def created_time(self):
         return self.instance['CreateDate']
 
+    def _delete_services(self):
+        services = self.client.get_paginator('list_services').paginate(
+            Filters=[{'Name': 'NAMESPACE_ID', 'Values': [self.id], 'Condition': 'EQ'}],
+        ).build_full_result()['Services']
+        for service in services:
+            self.client.delete_service(Id=service['Id'])
+
     def terminate(self):
+        self._delete_services()
         self.client.delete_namespace(Id=self.id)
