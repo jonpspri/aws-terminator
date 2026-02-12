@@ -201,3 +201,17 @@ Statement:
       - ecs:PutClusterCapacityProviders
     Resource:
       - 'arn:aws:ecs:{{ aws_region }}:{{ aws_account_id }}:*'
+
+  # This allows AWS Services to autmatically create their Default Service Linked Roles
+  # These have fixed policies and can only be assumed by the service itself.
+
+  - Sid: AllowServiceLinkedRoleCreation
+    Effect: Allow
+    Action:
+      - iam:CreateServiceLinkedRole
+    Resource:
+      - 'arn:aws:iam::{{ aws_account_id }}:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing'
+    Condition:
+      ForAnyValue:StringEquals:
+        iam:AWSServiceName:
+          - 'elasticloadbalancing.amazonaws.com'

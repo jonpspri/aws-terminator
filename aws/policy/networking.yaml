@@ -22,6 +22,7 @@ Statement:
       - route53:UpdateHealthCheck
       - network-firewall:List*
       - network-firewall:Describe*
+      - servicediscovery:ListNamespaces
     Resource: "*"
 
   - Sid: AllowRegionalUnrestrictedResourceActionsWhichIncurNoFees
@@ -163,3 +164,12 @@ Statement:
     Resource:
       - 'arn:aws:apigateway:{{ aws_region }}::/restapis*'
       - 'arn:aws:apigateway:{{ aws_region }}::/tags/*'
+
+  - Sid: AllowServiceDiscoveryActionsWhichIncureNoFees
+    Effect: Allow
+    Action:
+      - servicediscovery:CreateHttpNamespace
+      - servicediscovery:DeleteNamespace
+      - servicediscovery:GetOperation
+    Resource:
+      - 'arn:aws:servicediscovery:{{ aws_region }}:{{ aws_account_id }}:*/*'
