@@ -167,37 +167,16 @@ Statement:
         lambda:FunctionArn:
           - arn:aws:lambda:{{ aws_region }}:{{ aws_account_id }}:function:*
 
-  - Sid: AllowGlobalUnrestrictedResourceActionsWhichIncurFees
-    Effect: Allow
-    Action:
-      - ecs:CreateCluster
-    Resource: "*"
+  # This allows AWS Services to automatically create their Default Service Linked Roles
+  # These have fixed policies and can only be assumed by the service itself.
 
-  - Sid: AllowGlobalUnrestrictedResourceActionsWhichIncurNoFees
+  - Sid: AllowServiceLinkedRoleCreation
     Effect: Allow
     Action:
-      - ecs:Describe*
-      - ecs:List*
-      - ecs:TagResource
-      - ecs:UntagResource
-      - ecs:PutAccountSetting
-      - ecs:RegisterTaskDefinition
-      - ecs:DeregisterTaskDefinition
+      - iam:CreateServiceLinkedRole
     Resource:
-      - "*"
-
-  - Sid: AllowGlobalRestrictedResourceActionsWhichIncurFees
-    Effect: Allow
-    Action:
-      - ecs:RunTask
-      - ecs:StartTask
-      - ecs:StopTask
-      - ecs:DeleteCluster
-      - ecs:CreateService
-      - ecs:DeleteService
-      - ecs:UpdateService
-      - ecs:UpdateCluster
-      - ecs:*CapacityProvider
-      - ecs:PutClusterCapacityProviders
-    Resource:
-      - 'arn:aws:ecs:{{ aws_region }}:{{ aws_account_id }}:*'
+      - 'arn:aws:iam::{{ aws_account_id }}:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing'
+    Condition:
+      ForAnyValue:StringEquals:
+        iam:AWSServiceName:
+          - 'elasticloadbalancing.amazonaws.com'
