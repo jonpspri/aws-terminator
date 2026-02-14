@@ -74,6 +74,14 @@
                   "arn:aws:iam::{{ lambda_account_id }}:root",
                   "arn:aws:iam::{{ access_account_id }}:root"
                 ]
+    - name: create persistent encrypted S3 bucket for SSM connection plugin tests
+      tags: [iam, s3]
+      amazon.aws.s3_bucket:
+        name: "{{ ssm_bucket_name }}"
+        state: present
+        encryption: AES256
+        region: "{{ aws_region }}"
+
     - name: create iam role for lambda functions created by integration tests
       tags: iam
       amazon.aws.iam_role:
