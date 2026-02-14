@@ -24,18 +24,9 @@ Statement:
     Resource:
       - 'arn:aws:wafv2:{{ aws_region }}:{{ aws_account_id }}:*'
 
-  - Sid: AllowRegionalUnrestrictedResourceActionsWhichIncurNoFees
+  - Sid: AllowGlobalWafClassicActions
     Effect: Allow
     Action:
-      - inspector:List*
-      - inspector:CreateResourceGroup
-      - inspector:CreateAssessmentTarget
-      - inspector:Describe*
-      - inspector:UpdateAssessmentTarget
-      - inspector:DeleteAssessmentTarget
-      - inspector:CreateAssessmentTemplate
-      - inspector:DeleteAssessmentTemplate
-      - inspector:SetTagsForResource
       - waf:CreateByteMatchSet
       - waf:CreateGeoMatchSet
       - waf:CreateIPSet
@@ -75,11 +66,30 @@ Statement:
       - waf:UpdateSqlInjectionMatchSet
       - waf:UpdateWebACL
       - waf:UpdateXssMatchSet
+    Resource: "*"
+
+  - Sid: AllowGlobalWafV2ReadActions
+    Effect: Allow
+    Action:
       - wafv2:Describe*
       - wafv2:Get*
       - wafv2:List*
       - wafv2:TagResource
       - wafv2:UntagResource
+    Resource: "*"
+
+  - Sid: AllowRegionalUnrestrictedResourceActionsWhichIncurNoFees
+    Effect: Allow
+    Action:
+      - inspector:List*
+      - inspector:CreateResourceGroup
+      - inspector:CreateAssessmentTarget
+      - inspector:Describe*
+      - inspector:UpdateAssessmentTarget
+      - inspector:DeleteAssessmentTarget
+      - inspector:CreateAssessmentTemplate
+      - inspector:DeleteAssessmentTemplate
+      - inspector:SetTagsForResource
     Resource: "*"
     Condition:
       StringEquals:

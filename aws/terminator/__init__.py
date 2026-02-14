@@ -15,7 +15,8 @@ import dateutil.tz
 
 logger = logging.getLogger('cleanup')
 
-AWS_REGION = 'us-east-1'
+AWS_REGION = os.environ.get('TEST_REGION', 'us-east-1')
+SSM_BUCKET_NAME = os.environ.get('SSM_BUCKET_NAME', 'ssm-encrypted-test-bucket')
 
 T = typing.TypeVar('T')
 
@@ -232,8 +233,9 @@ class Terminator(abc.ABC):
 
     @staticmethod
     def _create(session: boto3.Session, instance_type: typing.Type['Terminator'], client_name: str,
-                describe_lambda: typing.Callable[[botocore.client.BaseClient], typing.List[typing.Dict[str, typing.Any]]]) -> typing.List['Terminator']:
-        client = session.client(client_name, region_name=AWS_REGION)
+                describe_lambda: typing.Callable[[botocore.client.BaseClient], typing.List[typing.Dict[str, typing.Any]]],
+                region_name: typing.Optional[str] = None) -> typing.List['Terminator']:
+        client = session.client(client_name, region_name=region_name or AWS_REGION)
         instances = describe_lambda(client)
         terminators = [instance_type(client, instance) for instance in instances]
         logger.debug('located %s: count=%d', instance_type.__name__, len(terminators))

@@ -110,6 +110,8 @@
         environment:
           TEST_ACCOUNT_ID: "{{ test_account_id }}"
           API_NAME: "{{ api_name }}"
+          TEST_REGION: "{{ aws_region }}"
+          SSM_BUCKET_NAME: "{{ ssm_bucket_name }}"
         layers:
           - "{{ terminator_requirements_layer.layer.layer_version_arn }}"
         log_format: JSON

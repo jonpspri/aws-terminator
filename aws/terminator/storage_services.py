@@ -3,7 +3,7 @@ import datetime
 import botocore
 import botocore.exceptions
 
-from . import DbTerminator, Terminator, get_account_id
+from . import DbTerminator, SSM_BUCKET_NAME, Terminator, get_account_id
 
 
 class S3Bucket(Terminator):
@@ -19,7 +19,7 @@ class S3Bucket(Terminator):
     def ignore(self):
         # Bucket encryption takes up to 24 hours to be enabled, so we use a persistent bucket
         # We'll empty the bucket contents in SSMBucketObjects
-        return self.instance['Name'] == 'ssm-encrypted-test-bucket'
+        return self.instance['Name'] == SSM_BUCKET_NAME
 
     @property
     def created_time(self):
@@ -59,7 +59,7 @@ class SSMBucketObjects(Terminator):
     @staticmethod
     def create(credentials):
         def paginate_objects(client):
-            list_bucket_objects_result = client.get_paginator('list_objects_v2').paginate(Bucket='ssm-encrypted-test-bucket').build_full_result()
+            list_bucket_objects_result = client.get_paginator('list_objects_v2').paginate(Bucket=SSM_BUCKET_NAME).build_full_result()
             bucket_contents = {}
             if list_bucket_objects_result.get('Contents'):
                 bucket_contents = list_bucket_objects_result['Contents']
@@ -76,7 +76,7 @@ class SSMBucketObjects(Terminator):
         return self.instance['Key']
 
     def terminate(self):
-        self.client.delete_object(Bucket='ssm-encrypted-test-bucket', Key=self.name)
+        self.client.delete_object(Bucket=SSM_BUCKET_NAME, Key=self.name)
 
 
 class S3AccessPoint(Terminator):
