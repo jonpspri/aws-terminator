@@ -332,7 +332,6 @@ class EcsTaskDefinition(DbTerminator):
     def create(credentials):
         def _paginate_task_definition_results(client):
             arns = client.get_paginator('list_task_definitions').paginate(
-                status='ACTIVE',
                 PaginationConfig={
                     'PageSize': 100,
                 }
