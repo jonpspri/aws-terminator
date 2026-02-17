@@ -28,11 +28,14 @@ def import_plugins() -> None:
         __import__(f'terminator.{import_name}')
 
 
-def cleanup(stage: str, check: bool, force: bool, api_name: str, test_account_id: str, targets: typing.Optional[typing.List[str]] = None) -> None:
+def cleanup(
+    stage: str, check: bool, force: bool, api_name: str, test_account_id: str, *,
+    targets: typing.Optional[typing.List[str]] = None
+) -> None:
     kvs.domain_name = re.sub(r'[^a-zA-Z0-9]+', '-', f'{api_name}-resources-{stage}')
     kvs.initialize()
 
-    cleanup_test_account(stage, check, force, api_name, test_account_id, targets)
+    cleanup_test_account(stage, check, force, api_name, test_account_id, targets=targets)
 
     if not targets or 'Database' in targets:
         cleanup_database(check, force)
@@ -62,7 +65,10 @@ def process_instance(instance: 'Terminator', check: bool, force: bool = False) -
     return status
 
 
-def cleanup_test_account(stage: str, check: bool, force: bool, api_name: str, test_account_id: str, targets: typing.Optional[typing.List[str]] = None) -> None:
+def cleanup_test_account(
+    stage: str, check: bool, force: bool, api_name: str, test_account_id: str, *,
+    targets: typing.Optional[typing.List[str]] = None
+) -> None:
     role = f'arn:aws:iam::{test_account_id}:role/{api_name}-test-{stage}'
     credentials = assume_session(role, 'cleanup')
 
