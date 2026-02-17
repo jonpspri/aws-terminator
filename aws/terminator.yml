@@ -13,7 +13,9 @@
     - name: check config
       tags: always
       ansible.builtin.assert:
-        that: 'test_account_id != lambda_account_id'
+        that:
+          - 'test_account_id != lambda_account_id'
+          - 'ssm_bucket_name is defined'
     - name: get aws account facts
       tags: always
       mattclay.aws.aws_account_facts:

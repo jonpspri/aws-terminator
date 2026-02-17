@@ -10,7 +10,9 @@
     - name: check config
       tags: always
       ansible.builtin.assert:
-        that: 'test_account_id != lambda_account_id'
+        that:
+          - 'test_account_id != lambda_account_id'
+          - 'ssm_bucket_name is defined'
     - name: check required variables
       tags: always
       ansible.builtin.fail: "msg='Environment variable {{ item | upper}} must be set.'"
